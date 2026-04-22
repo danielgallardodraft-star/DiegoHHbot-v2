@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DiegoHHbot</title>
+<style>
+  :root {
+    --bg: #0a0b14;
+    --bg-2: #101122;
+    --panel: #151629;
+    --panel-2: #1d1e38;
+    --border: #2a2b47;
+    --text: #ffffff;
+    --muted: #a1a3c2;
+    --accent: #d946ef;
+    --accent-2: #a855f7;
+    --accent-3: #ec4899;
+    --accent-soft: rgba(217, 70, 239, 0.15);
+    --danger: #f87171;
+    --neon-glow: 0 0 50px rgba(168, 85, 247, 0.22);
+    --neon-glow-strong: 0 0 60px rgba(217, 70, 239, 0.35);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background:
+      radial-gradient(ellipse 800px 500px at 15% -10%, rgba(168, 85, 247, 0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 85% 0%, rgba(217, 70, 239, 0.14) 0%, transparent 60%),
+      radial-gradient(ellipse at bottom, #0a0b14 0%, #050510 100%);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  header {
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 36px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    background:
+      linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(217, 70, 239, 0.05) 50%, transparent 100%),
+      var(--panel);
+    box-shadow: var(--neon-glow);
+  }
+  header::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--accent-2) 30%, var(--accent) 50%, var(--accent-3) 70%, transparent 100%);
+  }
+  header::after {
+    content: "";
+    position: absolute;
+    top: -60%; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(217, 70, 239, 0.25) 0%, transparent 60%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+  header h1 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 10px;
+    background: linear-gradient(90deg, #ffffff 0%, #e9d5ff 30%, #d946ef 70%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    z-index: 1;
+  }
+  .header-byline {
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-weight: 600;
+    margin: 0 0 14px;
+    position: relative;
+    z-index: 1;
+  }
+  header p {
+    color: var(--muted);
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 720px;
+    position: relative;
+    z-index: 1;
+  }
+  .card {
+    background: linear-gradient(180deg, var(--panel) 0%, #13142a 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px;
+    margin-bottom: 18px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { border-color: rgba(217, 70, 239, 0.4); }
+  .card h2 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin: 0 0 18px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 700px) { .row { grid-template-columns: 1fr; } }
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  input[type="password"], input[type="text"], select, textarea {
+    width: 100%;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft), 0 0 20px rgba(217, 70, 239, 0.15);
+  }
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .idea-wrap textarea {
+    padding-right: 60px;
+  }
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .checkbox-row input { width: auto; margin: 0; }
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #a855f7 0%, #d946ef 50%, #ec4899 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s, opacity 0.15s;
+    font-family: inherit;
+    box-shadow: 0 4px 20px rgba(217, 70, 239, 0.25);
+    letter-spacing: 0.02em;
+  }
+  .button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 40px rgba(217, 70, 239, 0.5);
+  }
+  .button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .button.secondary {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .button.secondary:hover:not(:disabled) { border-color: var(--accent); box-shadow: none; }
+  .actions { display: flex; gap: 12px; align-items: center; margin-top: 20px; }
+  .status {
+    font-size: 13px;
+    color: var(--muted);
+    min-height: 18px;
+  }
+  .status.error { color: var(--danger); }
+  .status.success { color: var(--accent); }
+  #output { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
+  .prompt-card {
+    background: linear-gradient(180deg, var(--panel) 0%, #13142a 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.4s ease;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .prompt-card:hover {
+    border-color: rgba(217, 70, 239, 0.45);
+    box-shadow: 0 0 40px rgba(217, 70, 239, 0.15);
+  }
+  .prompt-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-2), var(--accent), var(--accent-3), transparent);
+    opacity: 0.8;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .prompt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .prompt-title {
+    font-size: 15px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #d946ef 0%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.02em;
+  }
+  .prompt-tag {
+    font-size: 11px;
+    color: #e9d5ff;
+    background: rgba(168, 85, 247, 0.12);
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+  .prompt-text {
+    font-family: "SF Mono", "Monaco", "Menlo", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .prompt-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .copy-btn {
+    font-size: 12px;
+    padding: 8px 14px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); box-shadow: 0 0 20px rgba(217, 70, 239, 0.2); }
+  .copy-btn.copied { color: #ffffff; background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%); border-color: var(--accent); }
+  .loader {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .footer-note {
+    margin-top: 40px;
+    padding: 20px 0 0;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    text-align: center;
+  }
+  .footer-note strong { color: #e9d5ff; }
+  .footer-note code {
+    background: var(--panel-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--accent);
+  }
+  .idea-wrap {
+    position: relative;
+  }
+  .mic-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-2);
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+    z-index: 2;
+  }
+  .mic-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(217, 70, 239, 0.25);
+  }
+  .mic-btn svg { width: 18px; height: 18px; }
+  .mic-btn.listening {
+    background: linear-gradient(135deg, #d946ef 0%, #ec4899 100%);
+    color: #ffffff;
+    border-color: transparent;
+    animation: mic-pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes mic-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(217, 70, 239, 0.6), 0 0 24px rgba(217, 70, 239, 0.5); }
+    50% { box-shadow: 0 0 0 12px rgba(217, 70, 239, 0), 0 0 30px rgba(217, 70, 239, 0.7); }
+  }
+  .mic-hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mic-hint .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    animation: mic-pulse-dot 1s ease-in-out infinite;
+  }
+  @keyframes mic-pulse-dot {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  details {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  summary { cursor: pointer; user-select: none; color: var(--accent-2); }
+  summary:hover { color: var(--accent); }
+  details[open] summary { margin-bottom: 10px; }
+  .images-section { margin-top: 16px; }
+  .image-drop-zone {
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 18px 14px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    background: var(--bg-2);
+  }
+  .image-drop-zone:hover, .image-drop-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(217, 70, 239, 0.06);
+    color: var(--text);
+  }
+  .image-drop-zone input[type="file"] { display: none; }
+  .image-drop-zone .drop-icon { font-size: 22px; margin-bottom: 6px; line-height: 1; }
+  .image-drop-zone .drop-sub { font-size: 11px; margin-top: 4px; opacity: 0.7; }
+  .image-previews {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .image-thumb {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-2);
+  }
+  .image-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .image-thumb .remove-btn {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s;
+  }
+  .image-thumb .remove-btn:hover { background: var(--danger); }
+  .refine-card { display: none; }
+  .refine-card.visible { display: block; animation: fadeIn 0.4s ease; }
+  .image-result {
+    margin-top: 14px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    position: relative;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+  }
+  .image-result img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .image-result .img-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .image-result .img-loader .loader {
+    width: 28px; height: 28px;
+    border-width: 3px;
+    border-top-color: var(--accent);
+  }
+  .image-result .img-error {
+    color: var(--danger);
+    font-size: 12px;
+    padding: 16px;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 90%;
+  }
+  .image-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .prompt-text.collapsed {
+    max-height: 60px;
+    overflow: hidden;
+    position: relative;
+  }
+  .prompt-text.collapsed::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0; right: 0; height: 30px;
+    background: linear-gradient(180deg, transparent, var(--bg-2));
+    pointer-events: none;
+  }
+  .prompt-toggle {
+    font-size: 11px;
+    color: var(--accent-2);
+    cursor: pointer;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    user-select: none;
+  }
+  .prompt-toggle:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-byline">by Diego Hernandez</div>
+    <h1>DiegoHHbot</h1>
+    <p>
+      Escribe o dicta tu idea. El bot genera 3 prompts ultra-realistas y genera las 3
+      imágenes gratis con Gemini, manteniendo la estética cinematográfica: chiaroscuro,
+      Sony FX3 S-Cinetone, film noir, teal & shadow, 8K, textura anamórfica.
+    </p>
+  </header>
+
+  <div class="card">
+    <h2>1 · Conexión API (tus créditos)</h2>
+    <div class="row">
+      <div>
+        <label for="model">Modelo Gemini</label>
+        <select id="model"></select>
+        <input type="hidden" id="provider" value="gemini" />
+      </div>
+      <div></div>
+    </div>
+    <div style="margin-top:16px;">
+      <label for="apiKey">API Key</label>
+      <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off" />
+      <div class="checkbox-row">
+        <input type="checkbox" id="rememberKey" />
+        <label for="rememberKey" style="margin:0; text-transform:none; letter-spacing:0; font-size:13px;">
+          Recordar la key en este navegador
+        </label>
+      </div>
+    </div>
+    <details>
+      <summary>¿Dónde consigo la API key gratis?</summary>
+      <div style="margin-top:8px;">
+        Ve a <strong style="color:var(--accent);">aistudio.google.com</strong> → "Get API key" → login con Google → "Create API key". Cuota gratuita generosa.<br><br>
+        La key se envía directo del navegador a Google. Nunca se sube a ningún servidor externo.
+      </div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>2 · Tu idea</h2>
+    <label for="idea">Describe la escena o sujeto en lenguaje natural</label>
+    <div class="idea-wrap">
+      <textarea id="idea" placeholder="Ej: una mujer joven bebiendo café junto a una ventana lluviosa en un loft industrial"></textarea>
+      <button type="button" class="mic-btn" id="micBtn" title="Dictar con micrófono" aria-label="Dictar con micrófono">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="2" width="6" height="12" rx="3"/>
+          <path d="M5 10v2a7 7 0 0 0 14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="22"/>
+          <line x1="8" y1="22" x2="16" y2="22"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mic-hint" id="micHint" style="display:none;"><span class="dot"></span>Escuchando... pulsa el micrófono para parar</div>
+
+    <div class="images-section">
+      <label>Imágenes de referencia (opcional)</label>
+      <div class="image-drop-zone" id="imageDropZone">
+        <div class="drop-icon">⬆</div>
+        <div>Arrastra imágenes aquí o <strong style="color:var(--accent);">haz click para elegir</strong></div>
+        <div class="drop-sub">PNG, JPG, WebP · hasta 5 imágenes</div>
+        <input type="file" id="imageInput" accept="image/*" multiple />
+      </div>
+      <div class="image-previews" id="imagePreviews"></div>
+    </div>
+
+    <div class="actions">
+      <button class="button" id="generateBtn">
+        <span id="btnLabel">Generar 3 prompts + imágenes</span>
+      </button>
+      <span class="status" id="status"></span>
+    </div>
+  </div>
+
+  <div id="output"></div>
+
+  <div class="card refine-card" id="refineCard">
+    <h2>3 · Corregir / refinar</h2>
+    <label for="refineText">Indica qué quieres añadir, cambiar o corregir en los 3 prompts</label>
+    <textarea id="refineText" placeholder="Ej: añade un gato negro sobre la mesa · cambia los ángulos a vistas cenitales · reemplaza el café por un vaso de whisky"></textarea>
+    <div class="actions">
+      <button class="button" id="refineBtn">
+        <span id="refineLabel">Refinar prompts + regenerar imágenes</span>
+      </button>
+      <span class="status" id="refineStatus"></span>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Los 3 prompts + imágenes comparten la <strong>misma estética DNA</strong> (chiaroscuro, S-Cinetone, 50mm, teal & shadow, 8K).
+    Las imágenes se generan gratis con <code>gemini-2.5-flash-image</code> (Nano Banana).
+    Click en <strong>Regenerar imagen</strong> para pedir otra variación del mismo prompt.
+  </div>
+</div>
+
+<script>
+(() => {
+  const GEMINI_MODELS = [
+    { value: "gemini-2.5-flash", label: "gemini-2.5-flash (recomendado)" },
+    { value: "gemini-2.5-pro", label: "gemini-2.5-pro (máxima calidad)" },
+    { value: "gemini-2.0-flash", label: "gemini-2.0-flash (rápido)" }
+  ];
+
+  const AESTHETIC_DNA = `ESTÉTICA OBLIGATORIA (debe aparecer en CADA prompt, adaptada al sujeto nuevo):
+- Ultra-realistic, 8K, photographic, no illustration, no CGI look
+- Sony FX3 camera, S-Cinetone color grading
+- 50mm full-frame lens perspective (puedes variar a 35mm/85mm según el encuadre)
+- Anamorphic lens texture, subtle lens flare permitted
+- Extreme chiaroscuro lighting — deep blacks, single dominant cold/warm key light sculpting the subject
+- Cinematic high-contrast composition
+- Shallow depth of field with soft background bokeh
+- Dark moody atmosphere, film noir influence
+- Teal and shadow color palette (teal highlights + crushed shadows)
+- The environment extends into darkness behind the subject
+- Wide shot by default; vary to medium/close-up across the 3 versions`;
+
+  const SYSTEM_PROMPT = `Eres un director de fotografía experto en prompts para generadores de imágenes ultra-realistas (Midjourney, Flux, DALL·E, Sora, Freepik Mystic).
+
+Tu tarea: transformar la idea del usuario en 3 prompts EN INGLÉS, ultra-realistas, que mantengan esta estética cinematográfica fija:
+
+${AESTHETIC_DNA}
+
+Reglas:
+1. Los 3 prompts SIEMPRE en inglés, aunque la idea venga en español
+2. Cada prompt debe ser un párrafo denso de 60-100 palabras, sin bullets
+3. Los 3 deben compartir la estética DNA pero variar entre sí en: ángulo de cámara, encuadre (wide / medium / close-up), posición del key light, o micro-detalles de la escena
+4. Nunca menciones marcas registradas del sujeto (usa "tech brand", "luxury watch" en vez de nombres reales)
+5. Empieza cada prompt describiendo al sujeto concreto y su acción
+6. Termina cada prompt con los descriptores técnicos (camera, grading, lens, 8K, etc.)
+7. NUNCA incluyas explicaciones ni prefacios — solo JSON
+
+Formato de respuesta OBLIGATORIO (JSON válido, nada más):
+{
+  "prompts": [
+    { "variant": "Wide establishing shot", "prompt": "..." },
+    { "variant": "Medium waist-up shot", "prompt": "..." },
+    { "variant": "Tight close-up portrait", "prompt": "..." }
+  ]
+}`;
+
+  const SYSTEM_PROMPT_REFINE = `Eres un director de fotografía experto en prompts para generadores de imágenes ultra-realistas.
+
+Recibirás: la idea original, los 3 prompts actuales y una instrucción de corrección/ajuste del usuario.
+
+Tu tarea: devolver 3 NUEVOS prompts EN INGLÉS aplicando la corrección pedida, manteniendo SIEMPRE la estética cinematográfica fija:
+
+${AESTHETIC_DNA}
+
+Reglas:
+1. Aplica EXACTAMENTE la corrección del usuario (añadir elementos, cambiar ángulos, vestuario, mood, props, iluminación, etc.)
+2. Mantén la estética DNA en los 3 prompts
+3. Los 3 en inglés, 60-100 palabras cada uno, sin bullets, sin explicaciones
+4. Si se proveen imágenes de referencia, úsalas como guía visual
+5. NUNCA incluyas explicaciones ni prefacios — solo JSON
+
+Formato de respuesta OBLIGATORIO (JSON válido, nada más):
+{
+  "prompts": [
+    { "variant": "...", "prompt": "..." },
+    { "variant": "...", "prompt": "..." },
+    { "variant": "...", "prompt": "..." }
+  ]
+}`;
+
+  // ----- DOM -----
+  const $ = (id) => document.getElementById(id);
+  const modelEl = $("model");
+  const apiKeyEl = $("apiKey");
+  const rememberEl = $("rememberKey");
+  const ideaEl = $("idea");
+  const btn = $("generateBtn");
+  const btnLabel = $("btnLabel");
+  const statusEl = $("status");
+  const outputEl = $("output");
+
+  // ----- Persistence (local file use) -----
+  function populateModels() {
+    modelEl.innerHTML = "";
+    GEMINI_MODELS.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.value; opt.textContent = m.label;
+      modelEl.appendChild(opt);
+    });
+  }
+
+  function loadSaved() {
+    populateModels();
+    try {
+      const savedModel = localStorage.getItem("dbot_model_gemini");
+      if (savedModel) modelEl.value = savedModel;
+      const savedKey = localStorage.getItem("dbot_key_gemini");
+      if (savedKey) { apiKeyEl.value = savedKey; rememberEl.checked = true; }
+    } catch (e) { /* no storage, ignore */ }
+  }
+
+  modelEl.addEventListener("change", () => {
+    try { localStorage.setItem("dbot_model_gemini", modelEl.value); } catch(e) {}
+  });
+
+  // ----- API calls -----
+  const GEMINI_FALLBACK_CHAIN = [
+    "gemini-2.5-flash",
+    "gemini-2.0-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-pro"
+  ];
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  async function callGeminiSingle(apiKey, model, userText, images, systemPrompt) {
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/"
+      + encodeURIComponent(model) + ":generateContent?key=" + encodeURIComponent(apiKey);
+    const sysPrompt = systemPrompt || SYSTEM_PROMPT;
+    const userParts = [];
+    if (images && images.length) {
+      images.forEach(img => {
+        userParts.push({ inline_data: { mime_type: img.mime, data: img.base64 } });
+      });
+    }
+    userParts.push({ text: userText });
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: sysPrompt }] },
+        contents: [{ role: "user", parts: userParts }],
+        generationConfig: { temperature: 0.9, responseMimeType: "application/json" }
+      })
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      const err = new Error("Gemini " + res.status + ": " + body);
+      err.status = res.status;
+      throw err;
+    }
+    const data = await res.json();
+    const parts = data?.candidates?.[0]?.content?.parts || [];
+    const text = parts.map(p => p.text || "").join("");
+    if (!text) throw new Error("Gemini no devolvió contenido (posible bloqueo de seguridad).");
+    return text;
+  }
+
+  async function callGemini(apiKey, primaryModel, userText, images, systemPrompt, statusFn) {
+    const setS = statusFn || setStatus;
+    // Orden de intento: el modelo elegido + la cadena de fallback (sin duplicados)
+    const chain = [primaryModel, ...GEMINI_FALLBACK_CHAIN.filter(m => m !== primaryModel)];
+    let lastErr;
+    for (let i = 0; i < chain.length; i++) {
+      const model = chain[i];
+      // Reintentos por modelo: 3 intentos con backoff para 429/503
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          if (i === 0 && attempt === 0) setS("Llamando a " + model + "...");
+          else setS("Reintentando (" + model + ", intento " + (attempt + 1) + ")...");
+          return await callGeminiSingle(apiKey, model, userText, images, systemPrompt);
+        } catch (e) {
+          lastErr = e;
+          if (e.status === 429 || e.status === 503) {
+            // Saturación / rate limit — reintentar con backoff
+            if (attempt < 2) { await sleep(1000 + attempt * 1500); continue; }
+            break; // pasar al siguiente modelo
+          }
+          if (e.status === 404) {
+            // Modelo no disponible — saltar directo al siguiente sin reintentos
+            break;
+          }
+          // Errores reales (401 key inválida, 400 request malformado, etc): parar
+          throw e;
+        }
+      }
+      if (i < chain.length - 1) {
+        setS(chain[i] + " saturado. Cambiando a " + chain[i + 1] + "...");
+        await sleep(400);
+      }
+    }
+    throw lastErr || new Error("Todos los modelos Gemini fallaron.");
+  }
+
+  function parseJSON(text) {
+    // Strip code fences if present
+    let cleaned = text.trim();
+    if (cleaned.startsWith("```")) {
+      cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+    }
+    // Find first { and last }
+    const first = cleaned.indexOf("{");
+    const last = cleaned.lastIndexOf("}");
+    if (first !== -1 && last !== -1) cleaned = cleaned.slice(first, last + 1);
+    return JSON.parse(cleaned);
+  }
+
+  function renderPrompts(prompts) {
+    outputEl.innerHTML = "";
+    prompts.forEach((p, i) => {
+      const card = document.createElement("div");
+      card.className = "prompt-card";
+      card.dataset.index = String(i);
+      const variant = p.variant || ("Version " + (i + 1));
+      const text = p.prompt || "";
+      card.innerHTML = `
+        <div class="prompt-header">
+          <div class="prompt-title">Version ${i + 1}</div>
+          <div class="prompt-tag">${escapeHtml(variant)}</div>
+        </div>
+        <div class="prompt-text collapsed"></div>
+        <div class="prompt-toggle">Ver prompt completo ▾</div>
+        <div class="prompt-actions">
+          <button class="copy-btn">Copiar prompt</button>
+        </div>
+        <div class="image-result">
+          <div class="img-loader"><span class="loader"></span><span>Esperando...</span></div>
+        </div>
+        <div class="image-actions">
+          <button class="copy-btn regen-btn">Regenerar imagen</button>
+          <button class="copy-btn download-btn" disabled>Descargar</button>
+        </div>
+      `;
+      card.querySelector(".prompt-text").textContent = text;
+      const promptTextEl = card.querySelector(".prompt-text");
+      const toggle = card.querySelector(".prompt-toggle");
+      toggle.addEventListener("click", () => {
+        const isCollapsed = promptTextEl.classList.toggle("collapsed");
+        toggle.textContent = isCollapsed ? "Ver prompt completo ▾" : "Ocultar prompt ▴";
+      });
+      const btnCopy = card.querySelector(".copy-btn");
+      btnCopy.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+          btnCopy.textContent = "¡Copiado!";
+          btnCopy.classList.add("copied");
+          setTimeout(() => {
+            btnCopy.textContent = "Copiar prompt";
+            btnCopy.classList.remove("copied");
+          }, 1500);
+        } catch (e) {
+          btnCopy.textContent = "Error";
+        }
+      });
+      const regenBtn = card.querySelector(".regen-btn");
+      regenBtn.addEventListener("click", () => generateImageFor(card, text));
+      outputEl.appendChild(card);
+    });
+    // Auto-trigger image generation for the 3 cards (parallel)
+    const cards = outputEl.querySelectorAll(".prompt-card");
+    cards.forEach((card, idx) => {
+      const pText = prompts[idx].prompt || "";
+      generateImageFor(card, pText);
+    });
+  }
+
+  // ----- Gemini Image generation -----
+  const GEMINI_IMAGE_MODELS = [
+    "gemini-2.5-flash-image-preview",
+    "gemini-2.5-flash-image",
+    "gemini-2.0-flash-preview-image-generation"
+  ];
+
+  async function callGeminiImageSingle(apiKey, model, prompt, refImages) {
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/"
+      + encodeURIComponent(model) + ":generateContent?key=" + encodeURIComponent(apiKey);
+    const parts = [];
+    if (refImages && refImages.length) {
+      refImages.forEach(img => parts.push({ inline_data: { mime_type: img.mime, data: img.base64 } }));
+    }
+    parts.push({ text: prompt });
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts }],
+        generationConfig: { responseModalities: ["IMAGE", "TEXT"] }
+      })
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      const err = new Error("Gemini Image " + res.status + ": " + body);
+      err.status = res.status;
+      throw err;
+    }
+    const data = await res.json();
+    const respParts = data?.candidates?.[0]?.content?.parts || [];
+    for (const p of respParts) {
+      const inline = p.inline_data || p.inlineData;
+      if (inline && inline.data) {
+        const mime = inline.mime_type || inline.mimeType || "image/png";
+        return { mime, base64: inline.data };
+      }
+    }
+    const textResp = respParts.map(p => p.text || "").join("").trim();
+    throw new Error(textResp ? "Gemini: " + textResp.slice(0, 200) : "El modelo no devolvió imagen.");
+  }
+
+  async function callGeminiImage(apiKey, prompt, refImages) {
+    let lastErr;
+    for (let i = 0; i < GEMINI_IMAGE_MODELS.length; i++) {
+      const model = GEMINI_IMAGE_MODELS[i];
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          return await callGeminiImageSingle(apiKey, model, prompt, refImages);
+        } catch (e) {
+          lastErr = e;
+          if (e.status === 429 || e.status === 503) {
+            if (attempt < 1) { await sleep(1500); continue; }
+            break;
+          }
+          if (e.status === 404) break;
+          throw e;
+        }
+      }
+    }
+    throw lastErr || new Error("Ningún modelo de imagen disponible.");
+  }
+
+  async function generateImageFor(card, promptText) {
+    const apiKey = apiKeyEl.value.trim();
+    const resultEl = card.querySelector(".image-result");
+    const downloadBtn = card.querySelector(".download-btn");
+    const regenBtn = card.querySelector(".regen-btn");
+    if (!apiKey) {
+      resultEl.innerHTML = '<div class="img-error">Falta la API key arriba.</div>';
+      return;
+    }
+    resultEl.innerHTML = '<div class="img-loader"><span class="loader"></span><span>Generando imagen...</span></div>';
+    downloadBtn.disabled = true;
+    regenBtn.disabled = true;
+    try {
+      const { mime, base64 } = await callGeminiImage(apiKey, promptText, referenceImages);
+      const dataUrl = "data:" + mime + ";base64," + base64;
+      resultEl.innerHTML = "";
+      const img = document.createElement("img");
+      img.src = dataUrl;
+      img.alt = "Generated image";
+      resultEl.appendChild(img);
+      downloadBtn.disabled = false;
+      downloadBtn.onclick = () => {
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        const ext = (mime.split("/")[1] || "png").split("+")[0];
+        a.download = "diegohhbot_" + Date.now() + "." + ext;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      };
+    } catch (err) {
+      console.error("Image gen error:", err);
+      resultEl.innerHTML = '<div class="img-error"></div>';
+      resultEl.querySelector(".img-error").textContent = err.message || "Error generando imagen";
+    } finally {
+      regenBtn.disabled = false;
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+    }[c]));
+  }
+
+  function setStatus(msg, kind) {
+    statusEl.textContent = msg || "";
+    statusEl.className = "status" + (kind ? " " + kind : "");
+  }
+
+  btn.addEventListener("click", async () => {
+    const model = modelEl.value;
+    const apiKey = apiKeyEl.value.trim();
+    const idea = ideaEl.value.trim();
+
+    if (!apiKey) { setStatus("Falta la API key.", "error"); return; }
+    if (!idea) { setStatus("Escribe una idea primero.", "error"); return; }
+
+    // Save prefs
+    try {
+      if (rememberEl.checked) localStorage.setItem("dbot_key_gemini", apiKey);
+      else localStorage.removeItem("dbot_key_gemini");
+      localStorage.setItem("dbot_model_gemini", model);
+    } catch(e) {}
+
+    btn.disabled = true;
+    btnLabel.innerHTML = '<span class="loader"></span> Generando...';
+    setStatus("Llamando a " + model + "...");
+    outputEl.innerHTML = "";
+
+    try {
+      const userText = "Idea: " + idea;
+      const raw = await callGemini(apiKey, model, userText, referenceImages, SYSTEM_PROMPT, setStatus);
+      const parsed = parseJSON(raw);
+      if (!parsed.prompts || !Array.isArray(parsed.prompts) || parsed.prompts.length === 0) {
+        throw new Error("La respuesta no contiene prompts válidos.");
+      }
+      renderPrompts(parsed.prompts);
+      lastPrompts = parsed.prompts;
+      lastIdea = idea;
+      refineCard.classList.add("visible");
+      setStatus("3 prompts generados. Generando imágenes en paralelo...", "success");
+    } catch (err) {
+      console.error(err);
+      setStatus("Error: " + err.message, "error");
+    } finally {
+      btn.disabled = false;
+      btnLabel.textContent = "Generar 3 prompts + imágenes";
+    }
+  });
+
+  // ----- Speech recognition (dictado) -----
+  const micBtn = $("micBtn");
+  const micHint = $("micHint");
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  let isListening = false;
+  let baseText = ""; // texto ya presente antes de empezar a dictar
+
+  function setupRecognition() {
+    if (!SpeechRecognition) return null;
+    const rec = new SpeechRecognition();
+    rec.lang = "es-ES";
+    rec.continuous = true;
+    rec.interimResults = true;
+
+    rec.onresult = (event) => {
+      let finalTranscript = "";
+      let interimTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) finalTranscript += result[0].transcript;
+        else interimTranscript += result[0].transcript;
+      }
+      if (finalTranscript) {
+        baseText = (baseText ? baseText.replace(/\s+$/, "") + " " : "") + finalTranscript.trim();
+      }
+      const joined = (baseText + (interimTranscript ? " " + interimTranscript : "")).trim();
+      ideaEl.value = joined;
+    };
+
+    rec.onerror = (event) => {
+      console.error("Speech error:", event.error);
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        setStatus("Permiso de micrófono denegado. Actívalo en el navegador.", "error");
+      } else if (event.error === "no-speech") {
+        // silencio: ignorar, el usuario puede seguir hablando
+      } else if (event.error === "audio-capture") {
+        setStatus("No se detecta ningún micrófono.", "error");
+      } else {
+        setStatus("Error de dictado: " + event.error, "error");
+      }
+    };
+
+    rec.onend = () => {
+      // Si el usuario no lo detuvo manualmente, reiniciar (algunos navegadores cortan por silencio)
+      if (isListening) {
+        try { rec.start(); } catch (e) { stopListening(); }
+      }
+    };
+
+    return rec;
+  }
+
+  function startListening() {
+    if (!SpeechRecognition) {
+      setStatus("Tu navegador no soporta dictado por voz. Usa Chrome, Edge o Safari.", "error");
+      return;
+    }
+    if (!recognition) recognition = setupRecognition();
+    baseText = ideaEl.value;
+    try {
+      recognition.start();
+      isListening = true;
+      micBtn.classList.add("listening");
+      micBtn.title = "Parar dictado";
+      micHint.style.display = "flex";
+      setStatus("");
+    } catch (e) {
+      console.error(e);
+      setStatus("No se pudo iniciar el dictado: " + e.message, "error");
+    }
+  }
+
+  function stopListening() {
+    isListening = false;
+    if (recognition) {
+      try { recognition.stop(); } catch(e) {}
+    }
+    micBtn.classList.remove("listening");
+    micBtn.title = "Dictar con micrófono";
+    micHint.style.display = "none";
+  }
+
+  micBtn.addEventListener("click", () => {
+    if (isListening) stopListening();
+    else startListening();
+  });
+
+  // Si el navegador no soporta, deja el botón visible pero pinta desabilitado
+  if (!SpeechRecognition) {
+    micBtn.style.opacity = "0.4";
+    micBtn.title = "Dictado no soportado en este navegador (usa Chrome/Edge/Safari)";
+  }
+
+  // ----- Reference images -----
+  const imageInput = $("imageInput");
+  const imageDropZone = $("imageDropZone");
+  const imagePreviews = $("imagePreviews");
+  const MAX_IMAGES = 5;
+  let referenceImages = []; // [{ name, mime, base64, dataUrl }]
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        const base64 = String(dataUrl).split(",")[1] || "";
+        resolve({ name: file.name, mime: file.type || "image/jpeg", base64, dataUrl });
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function addFiles(files) {
+    const imgs = Array.from(files).filter(f => f.type && f.type.startsWith("image/"));
+    for (const f of imgs) {
+      if (referenceImages.length >= MAX_IMAGES) {
+        setStatus("Máximo " + MAX_IMAGES + " imágenes de referencia.", "error");
+        break;
+      }
+      try {
+        const obj = await fileToBase64(f);
+        referenceImages.push(obj);
+      } catch (e) {
+        console.error("Error leyendo imagen:", e);
+      }
+    }
+    renderImages();
+  }
+
+  function renderImages() {
+    imagePreviews.innerHTML = "";
+    referenceImages.forEach((img, idx) => {
+      const div = document.createElement("div");
+      div.className = "image-thumb";
+      div.innerHTML = '<img alt="" /><button type="button" class="remove-btn" aria-label="Quitar imagen">&times;</button>';
+      div.querySelector("img").src = img.dataUrl;
+      div.querySelector(".remove-btn").addEventListener("click", () => {
+        referenceImages.splice(idx, 1);
+        renderImages();
+      });
+      imagePreviews.appendChild(div);
+    });
+  }
+
+  imageDropZone.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove-btn")) return;
+    imageInput.click();
+  });
+  imageInput.addEventListener("change", (e) => {
+    addFiles(e.target.files);
+    imageInput.value = "";
+  });
+  ["dragenter", "dragover"].forEach(ev => {
+    imageDropZone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      imageDropZone.classList.add("dragover");
+    });
+  });
+  ["dragleave", "drop"].forEach(ev => {
+    imageDropZone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      imageDropZone.classList.remove("dragover");
+    });
+  });
+  imageDropZone.addEventListener("drop", (e) => {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+      addFiles(e.dataTransfer.files);
+    }
+  });
+
+  // ----- Refinement -----
+  const refineCard = $("refineCard");
+  const refineText = $("refineText");
+  const refineBtn = $("refineBtn");
+  const refineLabel = $("refineLabel");
+  const refineStatus = $("refineStatus");
+  let lastPrompts = null;
+  let lastIdea = "";
+
+  function setRefineStatus(msg, kind) {
+    refineStatus.textContent = msg || "";
+    refineStatus.className = "status" + (kind ? " " + kind : "");
+  }
+
+  refineBtn.addEventListener("click", async () => {
+    const model = modelEl.value;
+    const apiKey = apiKeyEl.value.trim();
+    const correction = refineText.value.trim();
+
+    if (!apiKey) { setRefineStatus("Falta la API key.", "error"); return; }
+    if (!correction) { setRefineStatus("Escribe la corrección primero.", "error"); return; }
+    if (!lastPrompts || !lastPrompts.length) {
+      setRefineStatus("Genera los 3 prompts primero.", "error");
+      return;
+    }
+
+    refineBtn.disabled = true;
+    refineLabel.innerHTML = '<span class="loader"></span> Refinando...';
+    setRefineStatus("Llamando a " + model + "...");
+
+    try {
+      const promptsBlock = lastPrompts.map((p, i) =>
+        (i + 1) + ". [" + (p.variant || "") + "]\n" + (p.prompt || "")
+      ).join("\n\n");
+      const userText =
+        "Original idea: " + lastIdea + "\n\n" +
+        "Current 3 prompts:\n" + promptsBlock + "\n\n" +
+        "User correction: " + correction;
+
+      const raw = await callGemini(apiKey, model, userText, referenceImages, SYSTEM_PROMPT_REFINE, setRefineStatus);
+      const parsed = parseJSON(raw);
+      if (!parsed.prompts || !Array.isArray(parsed.prompts) || parsed.prompts.length === 0) {
+        throw new Error("La respuesta no contiene prompts válidos.");
+      }
+      renderPrompts(parsed.prompts);
+      lastPrompts = parsed.prompts;
+      refineText.value = "";
+      setRefineStatus("3 prompts refinados.", "success");
+    } catch (err) {
+      console.error(err);
+      setRefineStatus("Error: " + err.message, "error");
+    } finally {
+      refineBtn.disabled = false;
+      refineLabel.textContent = "Refinar prompts + regenerar imágenes";
+    }
+  });
+
+  // Init
+  loadSaved();
+})();
+</script>
+</body>
+</html>
